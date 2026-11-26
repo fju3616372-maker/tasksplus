@@ -1,0 +1,334 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8" />
+  <title>Tasks+ — 4-Page Project Diary Booklet</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page Section1 {
+      size: 210mm 297mm;
+      margin: 16mm 18mm 16mm 18mm;
+      mso-header-margin: 10mm;
+      mso-footer-margin: 10mm;
+    }
+    div.Section1 { page: Section1; }
+    body {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      color: #1F1C18;
+      background-color: #FAF6EE;
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+    .page-break {
+      page-break-before: always;
+      mso-break-type: page-break;
+    }
+    .header-bar {
+      width: 100%;
+      border-bottom: 1pt solid #D8CFC0;
+      padding-bottom: 5pt;
+      margin-bottom: 12pt;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.5pt;
+      color: #635B50;
+      text-transform: uppercase;
+    }
+    .footer-bar {
+      width: 100%;
+      border-top: 1pt solid #D8CFC0;
+      padding-top: 5pt;
+      margin-top: 14pt;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.5pt;
+      color: #635B50;
+    }
+    .eyebrow {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9pt;
+      font-weight: bold;
+      color: #3950A3;
+      text-transform: uppercase;
+      letter-spacing: 1pt;
+      margin-bottom: 4pt;
+    }
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 34pt;
+      color: #1F1C18;
+      margin: 4pt 0 6pt 0;
+    }
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19pt;
+      color: #1F1C18;
+      margin: 0 0 6pt 0;
+    }
+    h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 13pt;
+      color: #1F1C18;
+      margin: 12pt 0 6pt 0;
+    }
+    .subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 12.5pt;
+      color: #635B50;
+      margin-bottom: 12pt;
+    }
+    .card {
+      background-color: #F2ECE0;
+      border-left: 4pt solid #3950A3;
+      padding: 9pt 12pt;
+      margin-bottom: 8pt;
+    }
+    .card-emerald { border-left-color: #177E5B; }
+    .card-violet  { border-left-color: #6E48AA; }
+    .card-coral   { border-left-color: #C24A38; }
+    .card-amber   { border-left-color: #B87414; }
+    .card-title {
+      font-weight: bold;
+      font-size: 10.5pt;
+      color: #1F1C18;
+      margin-bottom: 3pt;
+    }
+    .card-text {
+      font-size: 9.8pt;
+      color: #5F574C;
+      margin: 0;
+    }
+    table.styled {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8pt 0 10pt 0;
+    }
+    table.styled td, table.styled th {
+      border: 1pt solid #D8CFC0;
+      padding: 7pt 9pt;
+      vertical-align: top;
+      text-align: left;
+      font-size: 9.5pt;
+    }
+    table.styled th {
+      background-color: #EDE5D6;
+      color: #3950A3;
+      font-weight: bold;
+      width: 26%;
+    }
+    table.stats {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #F2ECE0;
+      border: 1pt solid #D8CFC0;
+      margin: 10pt 0 14pt 0;
+    }
+    table.stats td {
+      width: 25%;
+      padding: 9pt;
+      border-right: 1pt solid #D8CFC0;
+    }
+    .stat-big {
+      font-size: 12.5pt;
+      font-weight: bold;
+      color: #3950A3;
+    }
+    .stat-small {
+      font-size: 8.5pt;
+      color: #635B50;
+    }
+    .quote {
+      border-top: 1pt solid #D8CFC0;
+      border-bottom: 1pt solid #D8CFC0;
+      padding: 12pt 10pt;
+      margin: 12pt 0;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 12pt;
+      color: #1F1C18;
+    }
+  </style>
+</head>
+<body>
+<div class="Section1">
+
+  <!-- ==================== PAGE 1 ==================== -->
+  <table class="header-bar"><tr><td>TASKS+ &bull; PROJECT DIARY BOOKLET</td><td align="right">01 / COVER &amp; USES</td></tr></table>
+
+  <table style="width:100%; border-collapse:collapse; margin-bottom:10pt;">
+    <tr>
+      <td style="background:#177E5B; height:5pt; width:20%;"></td>
+      <td style="background:#7CB342; height:5pt; width:20%;"></td>
+      <td style="background:#B87414; height:5pt; width:20%;"></td>
+      <td style="background:#C24A38; height:5pt; width:20%;"></td>
+      <td style="background:#3950A3; height:5pt; width:20%;"></td>
+    </tr>
+  </table>
+
+  <div class="eyebrow">VOL. 01 &bull; PRODUCT FIELD GUIDE &amp; ENGINEERING JOURNAL</div>
+  <h1>Tasks+</h1>
+  <p class="subtitle">A calm, tactile Android workspace for daily momentum, focus sprints, family accountability, and mindful screen-time habits.</p>
+
+  <table class="stats">
+    <tr>
+      <td><div class="stat-big">~17 Hours</div><div class="stat-small">4 Iterative Phases</div></td>
+      <td><div class="stat-big">API 23–36</div><div class="stat-small">Android 6 to 16</div></td>
+      <td><div class="stat-big">Offline + Cloud</div><div class="stat-small">Room &amp; Firestore</div></td>
+      <td style="border-right:none;"><div class="stat-big">Material 3</div><div class="stat-small">Expressive Compose</div></td>
+    </tr>
+  </table>
+
+  <h3>Everyday Uses &amp; Purpose</h3>
+
+  <div class="card card-emerald">
+    <div class="card-title">01 &nbsp;Personal Daily Planning &amp; Habit Routines</div>
+    <p class="card-text">Organize one-time errands and repeating Daily, Weekly, Custom-Day, Monthly, or Annual routines with optional color-coded categories, urgency thermometers, and a collapsible Upcoming Recurring drawer that keeps today's focus list clutter-free.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">02 &nbsp;Time-Boxed Focus Sprints</div>
+    <p class="card-text">Pair selected tasks with a live countdown timer accessible inside Settings, persistent notifications, and a home-screen widget—backed by a guaranteed high-priority Time's Up alert when the sprint ends.</p>
+  </div>
+
+  <div class="card card-violet">
+    <div class="card-title">03 &nbsp;Family &amp; Team Accountability</div>
+    <p class="card-text">Build shared Family or Organization groups with Manager, Parent/Admin, Member, and Child roles. Assign tasks, attach optional photo proof, and verify completions automatically with Firebase AI Logic (Gemini) or manual approval.</p>
+  </div>
+
+  <div class="card card-coral">
+    <div class="card-title">04 &nbsp;Mindful Screen-Time &amp; Positive Motivation</div>
+    <p class="card-text">Set hourly, daily, or weekly per-app usage limits and task-gated app locks, reward early completions with customizable Credit Points, unlock profile emblems, and compare progress on the opt-in Global Leaderboard.</p>
+  </div>
+
+  <table class="footer-bar"><tr><td>CRAFTED BY FROSTY-SYS &bull; KOTLIN &amp; JETPACK COMPOSE</td><td align="right">PAGE 01 / 04</td></tr></table>
+
+  <!-- ==================== PAGE 2 ==================== -->
+  <br class="page-break" />
+  <table class="header-bar"><tr><td>TASKS+ &bull; PROJECT DIARY BOOKLET</td><td align="right">02 / FEATURES &amp; FUNCTIONS</td></tr></table>
+
+  <h2>Features &amp; Core Functions</h2>
+  <p class="card-text" style="margin-bottom:10pt;">Every module in Tasks+ is built offline-first for zero-latency responsiveness while syncing seamlessly across devices when signed in with Google.</p>
+
+  <div class="card">
+    <div class="card-title">01 &nbsp;Optional Color-Coded Categories &amp; Tactile Checklists</div>
+    <p class="card-text">Enable or disable Task Categories anytime in Settings. Includes 6 premade categories (Work, Personal, Shopping, Health, Study, Home), up to 30 custom categories across 10 curated colors, a slim top filter bar on To-Do, color-coded task card badges, instant search, and a radial ripple + spring-popped checkmark completion animation.</p>
+  </div>
+
+  <div class="card card-coral">
+    <div class="card-title">02 &nbsp;1–5 Urgency Thermometer &amp; Priority Reminder Engine</div>
+    <p class="card-text">Slide edge-to-edge across a custom green-to-red thermometer from Calm (1) to Critical (5). Supports configurable interval reminders powered by AlarmManager, optional wake-up alarm bells, and guided permission checks for Notifications, Exact Alarms, Overlay, and Battery Optimization.</p>
+  </div>
+
+  <div class="card card-amber">
+    <div class="card-title">03 &nbsp;Task Countdown Timer &amp; Guaranteed Time's Up Alert</div>
+    <p class="card-text">Select one or more tasks for a focus sprint, set custom durations, pause/resume or mark tasks complete mid-session, monitor live countdowns in persistent notifications and the Task Timer Home Widget, and receive an unmistakable Time's Up alert when the timer expires.</p>
+  </div>
+
+  <div class="card card-emerald">
+    <div class="card-title">04 &nbsp;Daily Productivity Grouped Bar Chart Dashboard</div>
+    <p class="card-text">Inspect Completed vs. Pending tasks across Today or the past 7 Days in an interactive grouped bar chart—available both as a toggleable in-app dashboard card and as a resizable Android Home-Screen Widget.</p>
+  </div>
+
+  <div class="card card-violet">
+    <div class="card-title">05 &nbsp;Family &amp; Team Groups, Gemini AI Photo Proof &amp; Screen-Time Locks</div>
+    <p class="card-text">Invite members via email, manage delegated roles, verify photo proofs via Firebase AI Logic (Gemini) auto-approval, track real-time app usage via UsageStatsManager, and enforce per-app limits or task-to-unlock rewards.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">06 &nbsp;Credit Economy, Global Leaderboard, M3 Themes &amp; In-App Updater</div>
+    <p class="card-text">Customize early-completion rewards, grace periods, and late penalties with an immutable credit ledger, unlock profile emblems, climb the opt-in Global Leaderboard, personalize with Dynamic Wallpaper Color + 5 tonal palettes, and install releases via the built-in GitHub APK updater.</p>
+  </div>
+
+  <table class="footer-bar"><tr><td>OFFLINE-FIRST ROOM SQLITE + REAL-TIME CLOUD SYNC</td><td align="right">PAGE 02 / 04</td></tr></table>
+
+  <!-- ==================== PAGE 3 ==================== -->
+  <br class="page-break" />
+  <table class="header-bar"><tr><td>TASKS+ &bull; PROJECT DIARY BOOKLET</td><td align="right">03 / BUILD DIARY &amp; STACK</td></tr></table>
+
+  <h2>How It Was Made: Build Diary (~17 Hours)</h2>
+  <p class="card-text" style="margin-bottom:10pt;">Tasks+ evolved across four structured phases—progressing from an offline-first Material 3 core to cloud sync, group accountability, gamification, and fine-grained visual polish.</p>
+
+  <div class="card">
+    <div class="card-title">PHASE 01 &bull; ~4 HOURS &mdash; Core Task Engine &amp; Material 3 Foundation</div>
+    <p class="card-text">Designed the Jetpack Compose Material 3 interface, custom adaptive launcher icon, Room SQLite database, recurring occurrence engine, AlarmManager reminder pipeline, dynamic theming, and Android home-screen widgets.</p>
+  </div>
+
+  <div class="card card-violet">
+    <div class="card-title">PHASE 02 &bull; ~6 HOURS &mdash; Cloud Sync, Groups &amp; Screen-Time Enforcement</div>
+    <p class="card-text">Integrated Google Sign-In via Jetpack Credential Manager, real-time Firestore sync backed by zero-trust security rules, Family/Team groups with role permissions, Firebase AI Logic (Gemini) photo verification, and UsageStatsManager screen-time locks.</p>
+  </div>
+
+  <div class="card card-emerald">
+    <div class="card-title">PHASE 03 &bull; ~4 HOURS &mdash; Gamification, Timer &amp; Productivity Analytics</div>
+    <p class="card-text">Built the customizable credit scoring rules, unlockable profile emblems, opt-in Global Leaderboard, live Task Countdown Timer (persistent notification + widget + Time's Up alert), and the 7-day Daily Productivity Grouped Bar Chart.</p>
+  </div>
+
+  <div class="card card-coral">
+    <div class="card-title">PHASE 04 &bull; ~3 HOURS &mdash; Visual Polish, Categories &amp; Hardening</div>
+    <p class="card-text">Refined the full-width 1–5 Urgency Thermometer slider, crafted the radial ripple &amp; stroke-drawn checkmark animation, built optional Premade &amp; Custom Task Categories with a compact top filter bar, resolved recurring sync duplication, and added Robolectric &amp; Firestore Rules test suites.</p>
+  </div>
+
+  <h3>Technical Architecture &amp; Stack</h3>
+  <table class="styled">
+    <tr><th>UI &amp; Motion</th><td>Kotlin, Jetpack Compose, Material Design 3, Custom Canvas Graphics, Spring &amp; Keyframe Animations</td></tr>
+    <tr><th>Architecture</th><td>Offline-first MVVM (TasksPlusViewModel, StateFlow, collectAsStateWithLifecycle, Coroutines)</td></tr>
+    <tr><th>Local Storage</th><td>Room SQLite (Schema v8 with lossless migrations) + Jetpack DataStore Preferences</td></tr>
+    <tr><th>Cloud &amp; Security</th><td>Firebase Firestore (named DB + strict zero-trust rules), Firebase Auth, Credential Manager, App Check</td></tr>
+    <tr><th>AI &amp; System APIs</th><td>Firebase AI Logic (Gemini photo verification), AlarmManager, UsageStatsManager, AppWidgets, OkHttp</td></tr>
+    <tr><th>Quality &amp; Tests</th><td>Robolectric JVM test suites (API 23–36) &amp; 9 automated Firestore Security Rules unit tests</td></tr>
+  </table>
+
+  <table class="footer-bar"><tr><td>~17 HOURS &bull; 4 PHASES &bull; ROOM V8 + ZERO-TRUST FIRESTORE</td><td align="right">PAGE 03 / 04</td></tr></table>
+
+  <!-- ==================== PAGE 4 ==================== -->
+  <br class="page-break" />
+  <table class="header-bar"><tr><td>TASKS+ &bull; PROJECT DIARY BOOKLET</td><td align="right">04 / REFLECTIONS &amp; COLOPHON</td></tr></table>
+
+  <h2>Engineering Notes &amp; Lessons Learned</h2>
+
+  <div class="card card-emerald">
+    <div class="card-title">01 &nbsp;Eliminating Daily Recurring Task Duplication Across Sync</div>
+    <p class="card-text">Kotlin's <i>isCompleted</i> boolean getter naming caused Firestore reflection to miss completed snapshots on recurring tasks, spawning duplicates. Switching to explicit snapshot parsing, @PropertyName parity, atomic Room + Cloud upserts, and a collapsible Upcoming Recurring drawer made daily routines rock-solid.</p>
+  </div>
+
+  <div class="card card-coral">
+    <div class="card-title">02 &nbsp;Guaranteed Time's Up Notifications Under Android OS Limits</div>
+    <p class="card-text">Background restrictions can delay ordinary countdowns. Combining exact AlarmManager triggers, synchronous broadcast handling, and a dedicated high-priority notification channel ensures Time's Up alerts fire reliably even when the phone is locked.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">03 &nbsp;Custom Tactile Craft From Android 6.0 to Android 16</div>
+    <p class="card-text">Supporting minSdk 23 through API 36 meant drawing custom Canvas visuals—including the edge-to-edge Urgency Thermometer, Productivity Bar Chart, and Radial Ripple Checkmark—without relying on modern-only APIs, backed by automated Marshmallow Robolectric tests.</p>
+  </div>
+
+  <div class="card card-violet">
+    <div class="card-title">04 &nbsp;Zero-Trust Security Parity on Every Schema Change</div>
+    <p class="card-text">Every feature addition—Groups, Credit Ledgers, Global Leaderboard, and Task Categories—was mirrored 1:1 across Room migrations, Firestore rules, and a 9-test local emulator suite before deployment.</p>
+  </div>
+
+  <div class="quote">
+    &ldquo;Great productivity software respects your attention&mdash;<br />
+    gentle when you're in flow, unmistakable when it matters.&rdquo;
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">COLOPHON &bull; TASKS+ PROJECT DIARY</div>
+    <p class="card-text" style="margin-bottom:6pt;">Designed as an editorial 4-page project diary ready to open in Microsoft Word, Google Docs, or LibreOffice Writer, and easy to export to PDF or share across social media.</p>
+    <p style="margin:0; font-family:Georgia, serif; font-weight:bold; font-size:10.5pt;">Crafted with care by frosty-sys &bull; Tasks+ Android Edition (tasksplus)</p>
+    <p class="card-text" style="margin-top:2pt;">More projects by frosty-sys: RNA. TV &bull; navstack &bull; Tasks+</p>
+  </div>
+
+  <table class="footer-bar"><tr><td>TASKS+ &bull; BUILT WITH KOTLIN, COMPOSE &amp; FIREBASE</td><td align="right">PAGE 04 / 04</td></tr></table>
+
+</div>
+</body>
+</html>

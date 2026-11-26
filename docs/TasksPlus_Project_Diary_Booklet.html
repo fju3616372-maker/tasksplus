@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasks+ — 4-Page Project Diary Booklet</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --paper: #FAF6EE;
+      --paper-card: #F2ECE0;
+      --ink: #1F1C18;
+      --muted: #5F574C;
+      --hairline: #D8CFC0;
+      --indigo: #3950A3;
+      --emerald: #177E5B;
+      --amber: #B87414;
+      --coral: #C24A38;
+      --violet: #6E48AA;
+    }
+
+    body {
+      background: #E6E0D5;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 24px 0;
+    }
+
+    .print-toolbar {
+      max-width: 210mm;
+      margin: 0 auto 18px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1F1C18;
+      color: #FAF6EE;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .print-toolbar button {
+      background: #3950A3;
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      height: 297mm;
+      margin: 0 auto 24px auto;
+      background: var(--paper);
+      position: relative;
+      padding: 12mm;
+      box-shadow: 0 18px 45px rgba(31, 28, 24, 0.14);
+      page-break-after: always;
+      break-after: page;
+      overflow: hidden;
+    }
+
+    .page:last-of-type {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .frame {
+      width: 100%;
+      height: 100%;
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      padding: 12mm 14mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .running-header, .running-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 9pt;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .running-header {
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--hairline);
+      margin-bottom: 14px;
+    }
+
+    .running-footer {
+      padding-top: 8px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 14px;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .spectrum-ribbon {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+
+    .spectrum-ribbon span {
+      height: 6px;
+      border-radius: 99px;
+      display: block;
+    }
+
+    .eyebrow {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--indigo);
+      text-transform: uppercase;
+    }
+
+    h1.cover-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 40pt;
+      line-height: 1.05;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+
+    .cover-subtitle {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 13.5pt;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    h2.section-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20pt;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    h3.sub-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 13.5pt;
+      color: var(--ink);
+    }
+
+    .lead {
+      font-size: 10.2pt;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: var(--paper-card);
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .stat-item strong {
+      display: block;
+      font-size: 13pt;
+      color: var(--indigo);
+      margin-bottom: 2px;
+    }
+
+    .stat-item span {
+      font-size: 8.5pt;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--paper-card);
+      border-radius: 10px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--indigo);
+    }
+
+    .card.emerald { border-left-color: var(--emerald); }
+    .card.violet  { border-left-color: var(--violet); }
+    .card.coral   { border-left-color: var(--coral); }
+    .card.amber   { border-left-color: var(--amber); }
+
+    .card-title {
+      font-size: 10.8pt;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .card-body {
+      font-size: 9.6pt;
+      line-height: 1.48;
+      color: var(--muted);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .feature-card {
+      background: var(--paper-card);
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      padding: 12px 13px;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--hairline);
+    }
+
+    .timeline-item {
+      position: relative;
+      background: var(--paper-card);
+      border-radius: 10px;
+      padding: 11px 14px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -20px;
+      top: 15px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--indigo);
+      border: 2px solid var(--paper);
+    }
+
+    .timeline-item.violet::before { background: var(--violet); }
+    .timeline-item.emerald::before { background: var(--emerald); }
+    .timeline-item.coral::before { background: var(--coral); }
+
+    .phase-meta {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 8.8pt;
+      font-weight: 700;
+      color: var(--indigo);
+      margin-bottom: 3px;
+    }
+
+    .timeline-item.violet .phase-meta { color: var(--violet); }
+    .timeline-item.emerald .phase-meta { color: var(--emerald); }
+    .timeline-item.coral .phase-meta { color: var(--coral); }
+
+    table.stack-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper-card);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 9.3pt;
+    }
+
+    table.stack-table th, table.stack-table td {
+      padding: 8px 11px;
+      text-align: left;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    table.stack-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.stack-table th {
+      width: 28%;
+      color: var(--indigo);
+      font-weight: 700;
+      background: rgba(57, 80, 163, 0.06);
+    }
+
+    table.stack-table td {
+      color: var(--muted);
+    }
+
+    .quote-box {
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 14px 10px;
+      text-align: center;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: 13pt;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+
+    .colophon {
+      background: var(--paper-card);
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .palette-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .palette-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .print-toolbar {
+        display: none;
+      }
+      .page {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <span><strong>Tasks+ 4-Page Project Diary Booklet</strong> — Print-Ready A4 Edition</span>
+    <button onclick="window.print()">Save as 4-Page PDF</button>
+  </div>
+
+  <!-- PAGE 1 -->
+  <section class="page">
+    <div class="frame">
+      <header class="running-header">
+        <span>Tasks+ &bull; Project Diary Booklet</span>
+        <span>01 / Cover &amp; Uses</span>
+      </header>
+
+      <main class="content">
+        <div class="spectrum-ribbon">
+          <span style="background:#177E5B;"></span>
+          <span style="background:#7CB342;"></span>
+          <span style="background:#B87414;"></span>
+          <span style="background:#C24A38;"></span>
+          <span style="background:#3950A3;"></span>
+        </div>
+
+        <div class="eyebrow">Vol. 01 &bull; Product Field Guide &amp; Engineering Journal</div>
+        <h1 class="cover-title">Tasks+</h1>
+        <p class="cover-subtitle">
+          A calm, tactile Android workspace for daily momentum, time-boxed focus sprints,
+          family accountability, and mindful screen-time habits.
+        </p>
+
+        <div class="stats-strip">
+          <div class="stat-item"><strong>~17 Hours</strong><span>4 Iterative Phases</span></div>
+          <div class="stat-item"><strong>API 23–36</strong><span>Android 6 to 16</span></div>
+          <div class="stat-item"><strong>Offline + Cloud</strong><span>Room &amp; Firestore</span></div>
+          <div class="stat-item"><strong>Material 3</strong><span>Expressive Compose</span></div>
+        </div>
+
+        <div style="margin-top:4px;">
+          <h3 class="sub-title" style="margin-bottom:8px;">Everyday Uses &amp; Purpose</h3>
+          <div style="display:flex; flex-direction:column; gap:9px;">
+            <div class="card emerald">
+              <div class="card-title">01 &nbsp;Personal Daily Planning &amp; Habit Routines</div>
+              <div class="card-body">Organize one-time errands and repeating Daily, Weekly, Custom-Day, Monthly, or Annual routines with optional color-coded categories, urgency thermometers, and a collapsible Upcoming Recurring drawer that keeps today's list clutter-free.</div>
+            </div>
+            <div class="card">
+              <div class="card-title">02 &nbsp;Time-Boxed Focus Sprints</div>
+              <div class="card-body">Pair selected tasks with a live countdown timer accessible inside Settings, persistent notifications, and a home-screen widget—backed by a guaranteed high-priority Time's Up alert when the sprint finishes.</div>
+            </div>
+            <div class="card violet">
+              <div class="card-title">03 &nbsp;Family &amp; Team Accountability</div>
+              <div class="card-body">Build shared Family or Organization groups with Manager, Parent/Admin, Member, and Child roles. Assign tasks, attach optional photo proof, and verify completions automatically with Firebase AI Logic (Gemini) or manual review.</div>
+            </div>
+            <div class="card coral">
+              <div class="card-title">04 &nbsp;Mindful Screen-Time &amp; Positive Motivation</div>
+              <div class="card-body">Set hourly, daily, or weekly per-app usage limits and task-gated app locks, reward early completions with customizable Credit Points, unlock profile emblems, and compare progress on the opt-in Global Leaderboard.</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="running-footer">
+        <span>Crafted by frosty-sys &bull; Kotlin &amp; Jetpack Compose</span>
+        <span>Page 01 / 04</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page">
+    <div class="frame">
+      <header class="running-header">
+        <span>Tasks+ &bull; Project Diary Booklet</span>
+        <span>02 / Features &amp; Functions</span>
+      </header>
+
+      <main class="content">
+        <div>
+          <h2 class="section-title">Features &amp; Core Functions</h2>
+          <p class="lead">Designed offline-first so every action is instant on device, while syncing seamlessly across Android devices via Google Sign-In and Firestore.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--indigo);">01 &bull; CATEGORIES &amp; MOTION</span>
+            <div class="card-title">Color Labels &amp; Ripple Checkmarks</div>
+            <div class="card-body">Toggle optional categories with 6 premade presets (Work, Personal, Shopping, Health, Study, Home) plus up to 30 custom labels in 10 colors. Includes a slim top filter bar, card badges, instant search, and a radial ripple + spring-popped checkmark animation on completion.</div>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--coral);">02 &bull; URGENCY &amp; ALERTS</span>
+            <div class="card-title">1–5 Urgency Thermometer &amp; Alarms</div>
+            <div class="card-body">Glide edge-to-edge across a custom green-to-red thermometer from Calm (1) to Critical (5). Pair tasks with configurable interval reminders via AlarmManager, optional wake-up alarm bells, and guided permission checks for exact alarms and battery guard.</div>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--amber);">03 &bull; FOCUS TIMER</span>
+            <div class="card-title">Task Countdown Timer &amp; Time's Up Alert</div>
+            <div class="card-body">Assign one or more tasks to a timed focus session with customizable default durations, pause/resume controls, live notification countdowns, a dedicated home-screen Timer Widget, and a guaranteed high-priority Time's Up alert when time expires.</div>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--emerald);">04 &bull; INSIGHTS</span>
+            <div class="card-title">Daily Productivity Bar Chart</div>
+            <div class="card-body">Track Completed vs. Pending tasks across Today or the past 7 Days in a custom grouped bar chart. Toggle the Productivity Dashboard inside the To-Do view or pin it directly to your Android home screen as a widget.</div>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--violet);">05 &bull; GROUPS &amp; AI PROOF</span>
+            <div class="card-title">Shared Groups, Gemini &amp; App Locks</div>
+            <div class="card-body">Invite members by email, assign group tasks, verify photo proofs via Gemini AI auto-approval, monitor real-time app usage via UsageStatsManager, and enforce per-app screen-time limits or task-to-unlock rewards.</div>
+          </div>
+
+          <div class="feature-card">
+            <span class="feature-tag" style="background:var(--indigo);">06 &bull; MOTIVATION &amp; THEMES</span>
+            <div class="card-title">Credits, Leaderboard &amp; M3 Themes</div>
+            <div class="card-body">Customize early-completion rewards, grace periods, and late penalties with an immutable credit ledger, unlock profile badges, join the opt-in Global Leaderboard, personalize with Dynamic Color + 5 palettes, and update directly via GitHub Releases.</div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="running-footer">
+        <span>Offline-First Room SQLite + Real-Time Cloud Sync</span>
+        <span>Page 02 / 04</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section class="page">
+    <div class="frame">
+      <header class="running-header">
+        <span>Tasks+ &bull; Project Diary Booklet</span>
+        <span>03 / Build Diary &amp; Stack</span>
+      </header>
+
+      <main class="content">
+        <div>
+          <h2 class="section-title">How It Was Made: Build Diary</h2>
+          <p class="lead">Total craft time: <strong>~17 focused hours</strong> across four iterative phases of UI engineering, cloud architecture, and reliability testing.</p>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="phase-meta">PHASE 01 &bull; ~4 HOURS &mdash; Core Task Engine &amp; Material 3 Foundation</div>
+            <div class="card-body">Built the Jetpack Compose M3 interface, custom adaptive launcher icon, Room SQLite database, recurring schedule calculator, AlarmManager reminder pipeline, dynamic theming with 5 tonal palettes, and Android home-screen widgets.</div>
+          </div>
+
+          <div class="timeline-item violet">
+            <div class="phase-meta">PHASE 02 &bull; ~6 HOURS &mdash; Cloud Sync, Groups &amp; Screen-Time Guards</div>
+            <div class="card-body">Integrated Google Sign-In via Jetpack Credential Manager, real-time Firestore sync backed by zero-trust security rules, Family/Team groups with role permissions, Firebase AI Logic (Gemini) photo verification, and UsageStatsManager screen-time locks.</div>
+          </div>
+
+          <div class="timeline-item emerald">
+            <div class="phase-meta">PHASE 03 &bull; ~4 HOURS &mdash; Credits, Leaderboard, Timer &amp; Analytics</div>
+            <div class="card-body">Engineered the customizable credit scoring economy, unlockable profile emblems, opt-in Global Leaderboard, live Task Countdown Timer (with guaranteed Time's Up alerts &amp; widget), and the 7-day Daily Productivity Grouped Bar Chart.</div>
+          </div>
+
+          <div class="timeline-item coral">
+            <div class="phase-meta">PHASE 04 &bull; ~3 HOURS &mdash; Tactile Polish, Categories &amp; Verification</div>
+            <div class="card-body">Refined the full-width 1–5 Urgency Thermometer slider, built the radial ripple &amp; checkmark animation, added optional premade &amp; custom Task Categories with a top filter bar, eliminated recurring sync duplication, and added Robolectric &amp; Firestore Rules tests.</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="sub-title" style="margin-bottom:6px;">Technical Architecture &amp; Stack</h3>
+          <table class="stack-table">
+            <tr>
+              <th>UI &amp; Motion</th>
+              <td>Kotlin, Jetpack Compose, Material 3, Custom Compose Canvas, Spring &amp; Keyframe Animations</td>
+            </tr>
+            <tr>
+              <th>Architecture</th>
+              <td>Offline-first MVVM (TasksPlusViewModel, StateFlow, collectAsStateWithLifecycle, Coroutines)</td>
+            </tr>
+            <tr>
+              <th>Local Storage</th>
+              <td>Room SQLite (Schema v8 with lossless migrations) + Jetpack DataStore Preferences</td>
+            </tr>
+            <tr>
+              <th>Cloud &amp; Auth</th>
+              <td>Firebase Firestore (named DB + zero-trust rules), Firebase Auth, Credential Manager, App Check</td>
+            </tr>
+            <tr>
+              <th>AI &amp; System</th>
+              <td>Firebase AI Logic (Gemini photo review), AlarmManager, UsageStatsManager, AppWidgets, OkHttp</td>
+            </tr>
+            <tr>
+              <th>Testing &amp; QA</th>
+              <td>Robolectric JVM test suites (API 23–36) &amp; 9 automated Firestore Rules unit tests</td>
+            </tr>
+          </table>
+        </div>
+      </main>
+
+      <footer class="running-footer">
+        <span>~17 Hours &bull; 4 Phases &bull; Room v8 + Zero-Trust Firestore</span>
+        <span>Page 03 / 04</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- PAGE 4 -->
+  <section class="page">
+    <div class="frame">
+      <header class="running-header">
+        <span>Tasks+ &bull; Project Diary Booklet</span>
+        <span>04 / Reflections &amp; Colophon</span>
+      </header>
+
+      <main class="content">
+        <div>
+          <h2 class="section-title">Engineering Notes &amp; Lessons</h2>
+          <p class="lead">Behind the clean Material 3 surfaces sit several tough Android &amp; cloud engineering problems solved along the way.</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div class="card emerald">
+            <div class="card-title">01 &nbsp;Solving Recurring Task Duplication in Cloud Sync</div>
+            <div class="card-body">Kotlin's <code>isCompleted</code> boolean property naming caused Firestore reflection to miss completed states on recurring routines, spawning duplicate copies. Switching to explicit snapshot parsing, <code>@PropertyName</code> parity, atomic Room + Cloud writes, and a dedicated Upcoming Recurring drawer made daily habits rock-solid.</div>
+          </div>
+
+          <div class="card coral">
+            <div class="card-title">02 &nbsp;Guaranteed Time's Up Notifications Under OS Limits</div>
+            <div class="card-body">Android background throttling can delay ordinary timers. Combining exact AlarmManager expiration schedules, synchronous receiver execution, and a dedicated high-priority alert channel ensures Time's Up alerts fire reliably even when the screen is off.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">03 &nbsp;Custom Visual Craft Across Android 6.0 to Android 16</div>
+            <div class="card-body">Maintaining <code>minSdk = 23</code> while targeting API 36 meant building custom Canvas components—the edge-to-edge Urgency Thermometer, Productivity Bar Chart, and Ripple Checkmark—without relying on modern-only APIs, verified by automated Marshmallow Robolectric tests.</div>
+          </div>
+
+          <div class="card violet">
+            <div class="card-title">04 &nbsp;Zero-Trust Security Parity on Every Feature</div>
+            <div class="card-body">Every schema update—including Group role permissions, Global Leaderboard records, and Task Categories—was validated end-to-end across Room migrations, Firestore rules, and a 9-case local emulator test suite before deployment.</div>
+          </div>
+        </div>
+
+        <div class="quote-box">
+          &ldquo;Great productivity software respects your attention&mdash;<br />
+          gentle when you're in flow, unmistakable when it matters.&rdquo;
+        </div>
+
+        <div class="colophon">
+          <div class="eyebrow" style="margin-bottom:5px;">Colophon &bull; Tasks+ Project Diary</div>
+          <p class="card-body" style="margin-bottom:8px;">
+            Created to share the complete story, architecture, and craft behind <strong>Tasks+</strong> across social media, portfolios, and developer communities. Open this file in any browser and press <em>Print &rarr; Save as PDF</em> for a crisp 4-page A4 booklet.
+          </p>
+          <div style="font-family:Georgia, serif; font-weight:700; font-size:10.5pt; color:var(--ink);">
+            Crafted with care by frosty-sys &bull; Tasks+ Android Edition (tasksplus)
+          </div>
+          <div style="font-size:9pt; color:var(--muted); margin-top:2px;">
+            More projects by frosty-sys: RNA. TV &bull; navstack &bull; Tasks+
+          </div>
+          <div class="palette-dots">
+            <span style="background:var(--indigo);"></span>
+            <span style="background:var(--violet);"></span>
+            <span style="background:var(--emerald);"></span>
+            <span style="background:var(--amber);"></span>
+            <span style="background:var(--coral);"></span>
+          </div>
+        </div>
+      </main>
+
+      <footer class="running-footer">
+        <span>Tasks+ &bull; Built With Kotlin, Compose &amp; Firebase</span>
+        <span>Page 04 / 04</span>
+      </footer>
+    </div>
+  </section>
+</body>
+</html>

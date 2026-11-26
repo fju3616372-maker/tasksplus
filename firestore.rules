@@ -1,0 +1,960 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-\\.]+$');
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidTask(data, userId) {
+      return data.keys().hasAll([
+               'userId', 'title', 'subtext', 'scheduledAtMillis', 'maxCompletionMillis',
+               'reminderIntervalMinutes', 'recurrenceType', 'recurrenceInterval',
+               'recurrenceDaysCsv', 'isCompleted', 'completedAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'userId', 'title', 'subtext', 'scheduledAtMillis', 'maxCompletionMillis',
+               'reminderIntervalMinutes', 'recurrenceType', 'recurrenceInterval',
+               'recurrenceDaysCsv', 'isCompleted', 'completedAtMillis',
+               'creditsAwarded', 'creditSecondsDelta',
+               'priority', 'urgencyLevel', 'categoryId', 'ringAlarmBell', 'createdAt', 'updatedAt'
+             ]) &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == userId && data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             data.subtext is string && data.subtext.size() <= 500 &&
+             data.scheduledAtMillis is int && data.scheduledAtMillis >= 0 &&
+             data.maxCompletionMillis is int && data.maxCompletionMillis >= 0 &&
+             data.reminderIntervalMinutes is int && data.reminderIntervalMinutes >= 0 && data.reminderIntervalMinutes <= 10080 &&
+             data.recurrenceType is string && data.recurrenceType.size() <= 32 &&
+             data.recurrenceType in ['NONE', 'DAILY', 'WEEKLY', 'CUSTOM_DAYS', 'MONTHLY', 'ANNUALLY'] &&
+             data.recurrenceInterval is int && data.recurrenceInterval >= 1 && data.recurrenceInterval <= 365 &&
+             data.recurrenceDaysCsv is string && data.recurrenceDaysCsv.size() <= 50 &&
+             data.isCompleted is bool &&
+             data.completedAtMillis is int && data.completedAtMillis >= 0 &&
+             (!('creditsAwarded' in data) || (data.creditsAwarded is int && data.creditsAwarded >= -1000000000 && data.creditsAwarded <= 1000000000)) &&
+             (!('creditSecondsDelta' in data) || (data.creditSecondsDelta is int && data.creditSecondsDelta >= -1000000000 && data.creditSecondsDelta <= 1000000000)) &&
+             (!('priority' in data) || (data.priority is string && data.priority.size() <= 20 && data.priority in ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])) &&
+             (!('urgencyLevel' in data) || (data.urgencyLevel is int && data.urgencyLevel >= 0 && data.urgencyLevel <= 5)) &&
+             (!('categoryId' in data) || (data.categoryId is string && data.categoryId.size() <= 64)) &&
+             (!('ringAlarmBell' in data) || data.ringAlarmBell is bool) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function hasValidCreditRuleFields(data) {
+      return (!('creditSystemEnabled' in data) || data.creditSystemEnabled is bool) &&
+             (!('earlyPointsPerSecond' in data) || ((data.earlyPointsPerSecond is int || data.earlyPointsPerSecond is float) && data.earlyPointsPerSecond >= 0 && data.earlyPointsPerSecond <= 1000)) &&
+             (!('latePenaltyPerSecond' in data) || ((data.latePenaltyPerSecond is int || data.latePenaltyPerSecond is float) && data.latePenaltyPerSecond >= 0 && data.latePenaltyPerSecond <= 1000)) &&
+             (!('creditGracePeriodSeconds' in data) || (data.creditGracePeriodSeconds is int && data.creditGracePeriodSeconds >= 0 && data.creditGracePeriodSeconds <= 86400)) &&
+             (!('maxCreditPerTask' in data) || (data.maxCreditPerTask is int && data.maxCreditPerTask >= 0 && data.maxCreditPerTask <= 1000000000)) &&
+             (!('maxPenaltyPerTask' in data) || (data.maxPenaltyPerTask is int && data.maxPenaltyPerTask >= 0 && data.maxPenaltyPerTask <= 1000000000)) &&
+             (!('allowNegativeCredits' in data) || data.allowNegativeCredits is bool);
+    }
+
+    function isValidPreferences(data, userId) {
+      return data.keys().hasAll([
+               'userId', 'themeMode', 'useDynamicColor', 'tonalSpotPalette',
+               'defaultReminderMinutes', 'notificationsEnabled', 'autoDeleteUpdateApk',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'userId', 'themeMode', 'useDynamicColor', 'tonalSpotPalette',
+               'defaultReminderMinutes', 'notificationsEnabled', 'autoDeleteUpdateApk',
+               'creditSystemEnabled', 'personalCredits', 'earlyPointsPerSecond',
+               'latePenaltyPerSecond', 'creditGracePeriodSeconds', 'maxCreditPerTask',
+               'maxPenaltyPerTask', 'allowNegativeCredits',
+               'activeProfileIcon', 'unlockedProfileIcons',
+               'categoriesEnabled', 'disabledPremadeCategoryIds', 'customCategoriesJson',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == userId && data.userId == request.auth.uid &&
+             data.themeMode is string && data.themeMode.size() <= 20 &&
+             data.themeMode in ['SYSTEM', 'LIGHT', 'DARK'] &&
+             data.useDynamicColor is bool &&
+             data.tonalSpotPalette is string && data.tonalSpotPalette.size() <= 20 &&
+             data.tonalSpotPalette in ['INDIGO', 'EMERALD', 'CORAL', 'TEAL', 'ROSE'] &&
+             data.defaultReminderMinutes is int && data.defaultReminderMinutes >= 0 && data.defaultReminderMinutes <= 10080 &&
+             data.notificationsEnabled is bool &&
+             data.autoDeleteUpdateApk is bool &&
+             hasValidCreditRuleFields(data) &&
+             (!('personalCredits' in data) || (data.personalCredits is int && data.personalCredits >= -100000000000 && data.personalCredits <= 100000000000)) &&
+             (!('activeProfileIcon' in data) || (data.activeProfileIcon is string && data.activeProfileIcon.size() <= 64)) &&
+             (!('unlockedProfileIcons' in data) || (data.unlockedProfileIcons is list && data.unlockedProfileIcons.size() <= 50)) &&
+             (!('categoriesEnabled' in data) || data.categoriesEnabled is bool) &&
+             (!('disabledPremadeCategoryIds' in data) || (data.disabledPremadeCategoryIds is list && data.disabledPremadeCategoryIds.size() <= 20)) &&
+             (!('customCategoriesJson' in data) || (data.customCategoriesJson is string && data.customCategoriesJson.size() <= 8000)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidScreenTimeLimit(data, userId) {
+      return data.keys().hasAll([
+               'userId', 'packageName', 'appName', 'limitMinutes', 'usedMinutes',
+               'periodType', 'isEnabled', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'userId', 'packageName', 'appName', 'limitMinutes', 'usedMinutes',
+               'periodType', 'isEnabled', 'createdAt', 'updatedAt'
+             ]) &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == userId && data.userId == request.auth.uid &&
+             data.packageName is string && data.packageName.size() >= 1 && data.packageName.size() <= 200 &&
+             data.appName is string && data.appName.size() >= 1 && data.appName.size() <= 200 &&
+             data.limitMinutes is int && data.limitMinutes >= 1 && data.limitMinutes <= 10080 &&
+             data.usedMinutes is int && data.usedMinutes >= 0 && data.usedMinutes <= 10080 &&
+             data.periodType is string && data.periodType.size() <= 20 &&
+             data.periodType in ['HOURLY', 'DAILY', 'WEEKLY'] &&
+             data.isEnabled is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function hasVerifiedEmail() {
+      return isSignedIn() &&
+             request.auth.token.email is string &&
+             request.auth.token.email_verified == true;
+    }
+
+    function userEmailLower() {
+      return request.auth.token.email.lower();
+    }
+
+    function groupDoc(groupId) {
+      return get(/databases/$(database)/documents/groups/$(groupId)).data;
+    }
+
+    function isGroupMember(groupId) {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/groups/$(groupId)) &&
+             request.auth.uid in groupDoc(groupId).memberUids;
+    }
+
+    function isGroupAdmin(groupId) {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/groups/$(groupId)) &&
+             (request.auth.uid == groupDoc(groupId).managerUid ||
+              request.auth.uid in groupDoc(groupId).adminUids);
+    }
+
+    function isGroupManager(groupId) {
+      return isSignedIn() &&
+             exists(/databases/$(database)/documents/groups/$(groupId)) &&
+             request.auth.uid == groupDoc(groupId).managerUid;
+    }
+
+    function isValidGroup(data) {
+      return data.keys().hasAll([
+               'name', 'groupType', 'managerUid', 'managerEmail', 'managerName',
+               'memberUids', 'adminUids', 'invitedEmails', 'invitedAdminEmails',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'name', 'groupType', 'managerUid', 'managerEmail', 'managerName',
+               'memberUids', 'adminUids', 'invitedEmails', 'invitedAdminEmails',
+               'creditSystemEnabled', 'earlyPointsPerSecond', 'latePenaltyPerSecond',
+               'creditGracePeriodSeconds', 'maxCreditPerTask', 'maxPenaltyPerTask',
+               'allowNegativeCredits',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.groupType is string && data.groupType in ['FAMILY', 'ORGANIZATION'] &&
+             data.managerUid is string && data.managerUid.size() >= 1 && data.managerUid.size() <= 128 &&
+             data.managerEmail is string && data.managerEmail.size() <= 200 &&
+             data.managerName is string && data.managerName.size() >= 1 && data.managerName.size() <= 120 &&
+             data.memberUids is list && data.memberUids.size() >= 1 && data.memberUids.size() <= 50 &&
+             data.adminUids is list && data.adminUids.size() >= 1 && data.adminUids.size() <= 50 &&
+             data.invitedEmails is list && data.invitedEmails.size() <= 50 &&
+             data.invitedAdminEmails is list && data.invitedAdminEmails.size() <= 50 &&
+             hasValidCreditRuleFields(data) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupInvite(data) {
+      return data.keys().hasAll([
+               'groupId', 'groupName', 'groupType', 'senderUid', 'senderName',
+               'senderEmail', 'targetEmail', 'proposedRole', 'groupAdminUids',
+               'status', 'acceptedByUid', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'groupName', 'groupType', 'senderUid', 'senderName',
+               'senderEmail', 'targetEmail', 'proposedRole', 'groupAdminUids',
+               'status', 'acceptedByUid', 'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId.size() >= 1 && data.groupId.size() <= 128 &&
+             data.groupName is string && data.groupName.size() >= 1 && data.groupName.size() <= 100 &&
+             data.groupType is string && data.groupType in ['FAMILY', 'ORGANIZATION'] &&
+             data.senderUid is string && data.senderUid.size() >= 1 && data.senderUid.size() <= 128 &&
+             data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 120 &&
+             data.senderEmail is string && data.senderEmail.size() <= 200 &&
+             data.targetEmail is string && data.targetEmail.size() >= 3 && data.targetEmail.size() <= 200 &&
+             data.proposedRole is string && data.proposedRole in ['PARENT_ADMIN', 'MEMBER', 'CHILD'] &&
+             data.groupAdminUids is list && data.groupAdminUids.size() >= 1 && data.groupAdminUids.size() <= 50 &&
+             data.status is string && data.status in ['PENDING', 'ACCEPTED', 'DECLINED'] &&
+             data.acceptedByUid is string && data.acceptedByUid.size() <= 128 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupMember(data, groupId, memberUid) {
+      return data.keys().hasAll([
+               'groupId', 'uid', 'email', 'displayName', 'role',
+               'canManageOthers', 'remoteDeviceLocked', 'remoteLockReason',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'uid', 'email', 'displayName', 'role',
+               'canManageOthers', 'remoteDeviceLocked', 'remoteLockReason',
+               'installedApps', 'appsLastSyncedAtMillis',
+               'creditBalance', 'totalEarnedCredits', 'totalDeductedCredits',
+               'activeProfileIcon', 'unlockedProfileIcons',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId == groupId &&
+             data.uid is string && data.uid == memberUid &&
+             data.email is string && data.email.size() <= 200 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120 &&
+             data.role is string && data.role in ['MANAGER', 'PARENT_ADMIN', 'MEMBER', 'CHILD'] &&
+             data.canManageOthers is bool &&
+             data.remoteDeviceLocked is bool &&
+             data.remoteLockReason is string && data.remoteLockReason.size() <= 300 &&
+             (!('installedApps' in data) || (data.installedApps is list && data.installedApps.size() <= 250)) &&
+             (!('appsLastSyncedAtMillis' in data) || (data.appsLastSyncedAtMillis is int && data.appsLastSyncedAtMillis >= 0)) &&
+             (!('creditBalance' in data) || (data.creditBalance is int && data.creditBalance >= -100000000000 && data.creditBalance <= 100000000000)) &&
+             (!('totalEarnedCredits' in data) || (data.totalEarnedCredits is int && data.totalEarnedCredits >= 0 && data.totalEarnedCredits <= 100000000000)) &&
+             (!('totalDeductedCredits' in data) || (data.totalDeductedCredits is int && data.totalDeductedCredits >= 0 && data.totalDeductedCredits <= 100000000000)) &&
+             (!('activeProfileIcon' in data) || (data.activeProfileIcon is string && data.activeProfileIcon.size() <= 64)) &&
+             (!('unlockedProfileIcons' in data) || (data.unlockedProfileIcons is list && data.unlockedProfileIcons.size() <= 50)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupTask(data, groupId) {
+      return data.keys().hasAll([
+               'groupId', 'title', 'subtext', 'createdByUid', 'createdByName',
+               'assignedToUid', 'assignedToName', 'priority', 'dueAtMillis',
+               'reminderIntervalMinutes', 'ringAlarmBell', 'gatedAppPackage',
+               'gatedAppName', 'unlockRewardMinutes', 'requiresPhotoProof',
+               'useGeminiAutoApproval', 'geminiVerificationPrompt', 'proofStatus',
+               'proofImageBase64', 'proofNote', 'geminiEvaluationResult',
+               'isCompleted', 'completedByName', 'completedAtMillis',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'title', 'subtext', 'createdByUid', 'createdByName',
+               'assignedToUid', 'assignedToName', 'priority', 'urgencyLevel', 'dueAtMillis',
+               'reminderIntervalMinutes', 'ringAlarmBell', 'gatedAppPackage',
+               'gatedAppName', 'unlockRewardMinutes', 'requiresPhotoProof',
+               'useGeminiAutoApproval', 'geminiVerificationPrompt', 'proofStatus',
+               'proofImageBase64', 'proofNote', 'geminiEvaluationResult',
+               'isCompleted', 'completedByUid', 'completedByName', 'completedAtMillis',
+               'creditsDelta', 'creditSecondsDelta', 'creditsApplied',
+               'proofSubmittedAtMillis', 'proofSubmittedByUid',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId == groupId &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             data.subtext is string && data.subtext.size() <= 500 &&
+             data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128 &&
+             data.createdByName is string && data.createdByName.size() >= 1 && data.createdByName.size() <= 120 &&
+             data.assignedToUid is string && data.assignedToUid.size() >= 1 && data.assignedToUid.size() <= 128 &&
+             data.assignedToName is string && data.assignedToName.size() >= 1 && data.assignedToName.size() <= 120 &&
+             data.priority is string && data.priority in ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] &&
+             (!('urgencyLevel' in data) || (data.urgencyLevel is int && data.urgencyLevel >= 0 && data.urgencyLevel <= 5)) &&
+             data.dueAtMillis is int && data.dueAtMillis >= 0 &&
+             data.reminderIntervalMinutes is int && data.reminderIntervalMinutes >= 0 && data.reminderIntervalMinutes <= 10080 &&
+             data.ringAlarmBell is bool &&
+             data.gatedAppPackage is string && data.gatedAppPackage.size() <= 200 &&
+             data.gatedAppName is string && data.gatedAppName.size() <= 200 &&
+             data.unlockRewardMinutes is int && data.unlockRewardMinutes >= 0 && data.unlockRewardMinutes <= 10080 &&
+             data.requiresPhotoProof is bool &&
+             data.useGeminiAutoApproval is bool &&
+             data.geminiVerificationPrompt is string && data.geminiVerificationPrompt.size() <= 1000 &&
+             data.proofStatus is string && data.proofStatus in ['NONE', 'PENDING_PROOF', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED'] &&
+             data.proofImageBase64 is string && data.proofImageBase64.size() <= 350000 &&
+             data.proofNote is string && data.proofNote.size() <= 500 &&
+             data.geminiEvaluationResult is string && data.geminiEvaluationResult.size() <= 2000 &&
+             data.isCompleted is bool &&
+             (!('completedByUid' in data) || (data.completedByUid is string && data.completedByUid.size() <= 128)) &&
+             data.completedByName is string && data.completedByName.size() <= 120 &&
+             data.completedAtMillis is int && data.completedAtMillis >= 0 &&
+             (!('creditsDelta' in data) || (data.creditsDelta is int && data.creditsDelta >= -1000000000 && data.creditsDelta <= 1000000000)) &&
+             (!('creditSecondsDelta' in data) || (data.creditSecondsDelta is int && data.creditSecondsDelta >= -1000000000 && data.creditSecondsDelta <= 1000000000)) &&
+             (!('creditsApplied' in data) || data.creditsApplied is bool) &&
+             (!('proofSubmittedAtMillis' in data) || (data.proofSubmittedAtMillis is int && data.proofSubmittedAtMillis >= 0)) &&
+             (!('proofSubmittedByUid' in data) || (data.proofSubmittedByUid is string && data.proofSubmittedByUid.size() <= 128)) &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidCreditTransaction(data, expectedGroupId) {
+      return data.keys().hasAll([
+               'userId', 'userName', 'groupId', 'taskId', 'taskTitle',
+               'pointsDelta', 'secondsDelta', 'reason', 'awardedByUid', 'awardedByName',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'userId', 'userName', 'groupId', 'taskId', 'taskTitle',
+               'pointsDelta', 'secondsDelta', 'reason', 'awardedByUid', 'awardedByName',
+               'createdAt', 'updatedAt'
+             ]) &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userName is string && data.userName.size() <= 120 &&
+             data.groupId is string && data.groupId == expectedGroupId &&
+             data.taskId is string && data.taskId.size() <= 128 &&
+             data.taskTitle is string && data.taskTitle.size() <= 200 &&
+             data.pointsDelta is int && data.pointsDelta >= -1000000000 && data.pointsDelta <= 1000000000 &&
+             data.secondsDelta is int && data.secondsDelta >= -1000000000 && data.secondsDelta <= 1000000000 &&
+             data.reason is string && data.reason.size() >= 1 && data.reason.size() <= 300 &&
+             data.awardedByUid is string && data.awardedByUid.size() >= 1 && data.awardedByUid.size() <= 128 &&
+             data.awardedByName is string && data.awardedByName.size() <= 120 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupPerk(data, groupId) {
+      return data.keys().hasAll([
+               'groupId', 'managerUid', 'assignedToUid', 'assignedToName', 'assignedByName',
+               'title', 'description', 'pointsCost', 'perkStatus', 'redeemedCount',
+               'redeemedAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'managerUid', 'assignedToUid', 'assignedToName', 'assignedByName',
+               'title', 'description', 'pointsCost', 'perkStatus', 'redeemedCount',
+               'redeemedAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId == groupId &&
+             data.managerUid is string && data.managerUid.size() >= 1 && data.managerUid.size() <= 128 &&
+             data.assignedToUid is string && data.assignedToUid.size() >= 1 && data.assignedToUid.size() <= 128 &&
+             data.assignedToUid != 'ALL' &&
+             data.assignedToName is string && data.assignedToName.size() >= 1 && data.assignedToName.size() <= 120 &&
+             data.assignedByName is string && data.assignedByName.size() >= 1 && data.assignedByName.size() <= 120 &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+             data.description is string && data.description.size() <= 500 &&
+             data.pointsCost is int && data.pointsCost >= 0 && data.pointsCost <= 1000000000 &&
+             data.perkStatus is string && data.perkStatus in ['ASSIGNED', 'REDEEMED', 'GRANTED'] &&
+             data.redeemedCount is int && data.redeemedCount >= 0 && data.redeemedCount <= 1000000 &&
+             data.redeemedAtMillis is int && data.redeemedAtMillis >= 0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupScreenTimeLimit(data, groupId) {
+      return data.keys().hasAll([
+               'groupId', 'targetUid', 'targetMemberName', 'packageName',
+               'appName', 'limitMinutes', 'usedMinutes', 'periodType',
+               'requireTaskIdToUnlock', 'requireTaskTitle', 'enforcedByUid',
+               'enforcedByName', 'isEnabled', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'targetUid', 'targetMemberName', 'packageName',
+               'appName', 'limitMinutes', 'usedMinutes', 'periodType',
+               'lockMode', 'lockAtMillis', 'taskInstructions', 'playBeepOnLock',
+               'requireTaskIdToUnlock', 'requireTaskTitle', 'enforcedByUid',
+               'enforcedByName', 'isEnabled', 'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId == groupId &&
+             data.targetUid is string && data.targetUid.size() >= 1 && data.targetUid.size() <= 128 &&
+             data.targetMemberName is string && data.targetMemberName.size() >= 1 && data.targetMemberName.size() <= 120 &&
+             data.packageName is string && data.packageName.size() >= 1 && data.packageName.size() <= 200 &&
+             data.appName is string && data.appName.size() >= 1 && data.appName.size() <= 200 &&
+             data.limitMinutes is int && data.limitMinutes >= 1 && data.limitMinutes <= 10080 &&
+             data.usedMinutes is int && data.usedMinutes >= 0 && data.usedMinutes <= 10080 &&
+             data.periodType is string && data.periodType in ['HOURLY', 'DAILY', 'WEEKLY'] &&
+             (!('lockMode' in data) || (data.lockMode is string && data.lockMode in ['LOCK_NOW', 'LOCK_AT_TIME', 'USAGE_LIMIT'])) &&
+             (!('lockAtMillis' in data) || (data.lockAtMillis is int && data.lockAtMillis >= 0)) &&
+             (!('taskInstructions' in data) || (data.taskInstructions is string && data.taskInstructions.size() <= 1000)) &&
+             (!('playBeepOnLock' in data) || data.playBeepOnLock is bool) &&
+             data.requireTaskIdToUnlock is string && data.requireTaskIdToUnlock.size() <= 128 &&
+             data.requireTaskTitle is string && data.requireTaskTitle.size() <= 200 &&
+             data.enforcedByUid is string && data.enforcedByUid.size() >= 1 && data.enforcedByUid.size() <= 128 &&
+             data.enforcedByName is string && data.enforcedByName.size() >= 1 && data.enforcedByName.size() <= 120 &&
+             data.isEnabled is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidTaskRecord(data, userId) {
+      return data.keys().hasAll([
+               'userId', 'recordType', 'sourceScope', 'taskId', 'taskTitle',
+               'taskSubtext', 'groupId', 'groupName', 'counterpartyName',
+               'pointsReceived', 'hasPoints', 'pointsReason',
+               'eventTimeMillis', 'dueAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'userId', 'recordType', 'sourceScope', 'taskId', 'taskTitle',
+               'taskSubtext', 'groupId', 'groupName', 'counterpartyName',
+               'pointsReceived', 'hasPoints', 'pointsReason',
+               'eventTimeMillis', 'dueAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.userId is string && data.userId == userId && data.userId == request.auth.uid &&
+             data.recordType is string && data.recordType in ['ENTERED', 'DONE', 'GIVEN', 'POINTS_RECEIVED'] &&
+             data.sourceScope is string && data.sourceScope in ['PERSONAL', 'FAMILY', 'WORKPLACE'] &&
+             data.taskId is string && data.taskId.size() <= 128 &&
+             data.taskTitle is string && data.taskTitle.size() >= 1 && data.taskTitle.size() <= 200 &&
+             data.taskSubtext is string && data.taskSubtext.size() <= 500 &&
+             data.groupId is string && data.groupId.size() <= 128 &&
+             data.groupName is string && data.groupName.size() <= 100 &&
+             data.counterpartyName is string && data.counterpartyName.size() <= 120 &&
+             data.pointsReceived is int && data.pointsReceived >= -1000000000 && data.pointsReceived <= 1000000000 &&
+             data.hasPoints is bool &&
+             data.pointsReason is string && data.pointsReason.size() <= 300 &&
+             data.eventTimeMillis is int && data.eventTimeMillis >= 0 &&
+             data.dueAtMillis is int && data.dueAtMillis >= 0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroupRelay(data, groupId) {
+      return data.keys().hasAll([
+               'groupId', 'title', 'description', 'createdByUid', 'createdByName',
+               'steps', 'currentStepIndex', 'currentAssigneeUid', 'relayStatus',
+               'streakCount', 'startedAtMillis', 'lastHandoffAtMillis',
+               'completedAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.keys().hasOnly([
+               'groupId', 'title', 'description', 'createdByUid', 'createdByName',
+               'steps', 'currentStepIndex', 'currentAssigneeUid', 'relayStatus',
+               'streakCount', 'startedAtMillis', 'lastHandoffAtMillis',
+               'completedAtMillis', 'createdAt', 'updatedAt'
+             ]) &&
+             data.groupId is string && data.groupId == groupId &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 160 &&
+             data.description is string && data.description.size() <= 500 &&
+             data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128 &&
+             data.createdByName is string && data.createdByName.size() >= 1 && data.createdByName.size() <= 120 &&
+             data.steps is list && data.steps.size() >= 2 && data.steps.size() <= 10 &&
+             data.currentStepIndex is int && data.currentStepIndex >= 0 && data.currentStepIndex <= data.steps.size() &&
+             data.currentAssigneeUid is string && data.currentAssigneeUid.size() <= 128 &&
+             data.relayStatus is string && data.relayStatus in ['ACTIVE', 'COMPLETED'] &&
+             data.streakCount is int && data.streakCount >= 0 && data.streakCount <= 100 &&
+             data.startedAtMillis is int && data.startedAtMillis >= 0 &&
+             data.lastHandoffAtMillis is int && data.lastHandoffAtMillis >= 0 &&
+             data.completedAtMillis is int && data.completedAtMillis >= 0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId}/tasks/{taskId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(taskId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(taskId) &&
+                       isValidTask(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(taskId) &&
+                       isValidTask(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'title', 'subtext', 'scheduledAtMillis', 'maxCompletionMillis',
+                         'reminderIntervalMinutes', 'recurrenceType', 'recurrenceInterval',
+                         'recurrenceDaysCsv', 'isCompleted', 'completedAtMillis',
+                         'creditsAwarded', 'creditSecondsDelta',
+                         'priority', 'urgencyLevel', 'categoryId', 'ringAlarmBell', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(taskId);
+    }
+
+    match /users/{userId}/taskRecords/{recordId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(recordId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(recordId) &&
+                       isValidTaskRecord(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(recordId) &&
+                       isValidTaskRecord(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'recordType', 'sourceScope', 'taskId', 'taskTitle',
+                         'taskSubtext', 'groupId', 'groupName', 'counterpartyName',
+                         'pointsReceived', 'hasPoints', 'pointsReason',
+                         'eventTimeMillis', 'dueAtMillis', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(recordId);
+    }
+
+    match /users/{userId}/settings/{prefId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(prefId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(prefId) &&
+                       isValidPreferences(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(prefId) &&
+                       isValidPreferences(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'themeMode', 'useDynamicColor', 'tonalSpotPalette',
+                         'defaultReminderMinutes', 'notificationsEnabled',
+                         'autoDeleteUpdateApk',
+                         'creditSystemEnabled', 'personalCredits', 'earlyPointsPerSecond',
+                         'latePenaltyPerSecond', 'creditGracePeriodSeconds', 'maxCreditPerTask',
+                         'maxPenaltyPerTask', 'allowNegativeCredits',
+                         'activeProfileIcon', 'unlockedProfileIcons',
+                         'categoriesEnabled', 'disabledPremadeCategoryIds', 'customCategoriesJson',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(prefId);
+    }
+
+    match /users/{userId}/screentime/{limitId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(limitId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(limitId) &&
+                       isValidScreenTimeLimit(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(limitId) &&
+                       isValidScreenTimeLimit(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().packageName == existing().packageName &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'appName', 'limitMinutes', 'usedMinutes',
+                         'periodType', 'isEnabled', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(limitId);
+    }
+
+    match /users/{userId}/creditTransactions/{txId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(txId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(txId) &&
+                       isValidCreditTransaction(incoming(), '') &&
+                       incoming().userId == userId &&
+                       incoming().awardedByUid == request.auth.uid;
+
+      allow update: if false;
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(txId);
+    }
+
+    match /groups/{groupId} {
+      allow list: if isSignedIn() && request.auth.uid in existing().memberUids;
+      allow get: if isSignedIn() && resource != null && (
+        request.auth.uid in existing().memberUids ||
+        (hasVerifiedEmail() && 'invitedEmails' in existing() && userEmailLower() in existing().invitedEmails)
+      );
+
+      allow create: if isSignedIn() &&
+                       isValidId(groupId) &&
+                       isValidGroup(incoming()) &&
+                       incoming().managerUid == request.auth.uid &&
+                       incoming().memberUids.size() == 1 &&
+                       request.auth.uid in incoming().memberUids &&
+                       incoming().adminUids.size() == 1 &&
+                       request.auth.uid in incoming().adminUids;
+
+      allow update: if isSignedIn() &&
+                       isValidId(groupId) &&
+                       isValidGroup(incoming()) &&
+                       incoming().managerUid == existing().managerUid &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         (
+                           existing().managerUid == request.auth.uid &&
+                           existing().managerUid in incoming().memberUids &&
+                           existing().managerUid in incoming().adminUids &&
+                           incoming().diff(existing()).affectedKeys().hasOnly([
+                             'name', 'groupType', 'memberUids', 'adminUids',
+                             'invitedEmails', 'invitedAdminEmails',
+                             'creditSystemEnabled', 'earlyPointsPerSecond', 'latePenaltyPerSecond',
+                             'creditGracePeriodSeconds', 'maxCreditPerTask', 'maxPenaltyPerTask',
+                             'allowNegativeCredits',
+                             'updatedAt'
+                           ])
+                         ) ||
+                         (
+                           request.auth.uid in existing().adminUids &&
+                           existing().managerUid != request.auth.uid &&
+                           existing().managerUid in incoming().memberUids &&
+                           existing().managerUid in incoming().adminUids &&
+                           incoming().diff(existing()).affectedKeys().hasOnly([
+                             'name', 'groupType', 'memberUids', 'adminUids',
+                             'invitedEmails', 'invitedAdminEmails',
+                             'updatedAt'
+                           ])
+                         ) ||
+                         (
+                           request.auth.uid in existing().memberUids &&
+                           existing().managerUid != request.auth.uid &&
+                           !(request.auth.uid in incoming().memberUids) &&
+                           !(request.auth.uid in incoming().adminUids) &&
+                           existing().memberUids.hasAll(incoming().memberUids) &&
+                           existing().adminUids.hasAll(incoming().adminUids) &&
+                           incoming().memberUids.size() == existing().memberUids.size() - 1 &&
+                           incoming().diff(existing()).affectedKeys().hasOnly(['memberUids', 'adminUids', 'updatedAt'])
+                         ) ||
+                         (
+                           hasVerifiedEmail() &&
+                           'invitedEmails' in existing() &&
+                           userEmailLower() in existing().invitedEmails &&
+                           request.auth.uid in incoming().memberUids &&
+                           incoming().memberUids.hasAll(existing().memberUids) &&
+                           incoming().memberUids.size() <= existing().memberUids.size() + 1 &&
+                           incoming().adminUids.hasAll(existing().adminUids) &&
+                           (
+                             incoming().adminUids.size() == existing().adminUids.size() ||
+                             (
+                               incoming().adminUids.size() == existing().adminUids.size() + 1 &&
+                               request.auth.uid in incoming().adminUids &&
+                               'invitedAdminEmails' in existing() &&
+                               userEmailLower() in existing().invitedAdminEmails
+                             )
+                           ) &&
+                           !(userEmailLower() in incoming().invitedEmails) &&
+                           !(userEmailLower() in incoming().invitedAdminEmails) &&
+                           incoming().diff(existing()).affectedKeys().hasOnly([
+                             'memberUids', 'adminUids', 'invitedEmails', 'invitedAdminEmails', 'updatedAt'
+                           ])
+                         )
+                       );
+
+      allow delete: if isSignedIn() &&
+                       isValidId(groupId) &&
+                       existing().managerUid == request.auth.uid;
+
+      match /members/{memberUid} {
+        allow get: if isSignedIn() &&
+                      isValidId(groupId) &&
+                      isValidId(memberUid) &&
+                      (request.auth.uid == memberUid || isGroupMember(groupId));
+        allow list: if isSignedIn() &&
+                       isValidId(groupId) &&
+                       isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(memberUid) &&
+                         isValidGroupMember(incoming(), groupId, memberUid) &&
+                         request.auth.uid == memberUid &&
+                         isGroupMember(groupId) &&
+                         incoming().remoteDeviceLocked == false &&
+                         (
+                           (incoming().role == 'MANAGER' && isGroupManager(groupId) && incoming().canManageOthers == true) ||
+                           (incoming().role != 'MANAGER' && (!incoming().canManageOthers || request.auth.uid in groupDoc(groupId).adminUids))
+                         );
+
+        allow update: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(memberUid) &&
+                         isValidGroupMember(incoming(), groupId, memberUid) &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().groupId == existing().groupId &&
+                         incoming().uid == existing().uid &&
+                         (
+                           (
+                             isGroupAdmin(groupId) &&
+                             (isGroupManager(groupId) || existing().role != 'MANAGER') &&
+                             (!incoming().canManageOthers || isGroupManager(groupId) || existing().canManageOthers) &&
+                             (
+                               isGroupManager(groupId) ||
+                               request.auth.uid == memberUid ||
+                               !incoming().diff(existing()).affectedKeys().hasAny([
+                                 'creditBalance', 'totalEarnedCredits', 'totalDeductedCredits'
+                               ])
+                             )
+                           ) ||
+                           (
+                             request.auth.uid == memberUid &&
+                             isGroupMember(groupId) &&
+                             incoming().role == existing().role &&
+                             incoming().canManageOthers == existing().canManageOthers &&
+                             incoming().remoteDeviceLocked == existing().remoteDeviceLocked &&
+                             incoming().remoteLockReason == existing().remoteLockReason &&
+                             incoming().diff(existing()).affectedKeys().hasOnly([
+                               'installedApps', 'appsLastSyncedAtMillis', 'displayName',
+                               'creditBalance', 'totalEarnedCredits', 'totalDeductedCredits',
+                               'activeProfileIcon', 'unlockedProfileIcons',
+                               'updatedAt'
+                             ])
+                           )
+                         );
+
+        allow delete: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(memberUid) &&
+                         (isGroupManager(groupId) || (request.auth.uid == memberUid && !isGroupManager(groupId)));
+      }
+
+      match /groupTasks/{taskId} {
+        allow get, list: if isSignedIn() && isValidId(groupId) && isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(taskId) &&
+                         isValidGroupTask(incoming(), groupId) &&
+                         isGroupMember(groupId) &&
+                         incoming().createdByUid == request.auth.uid;
+
+        allow update: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(taskId) &&
+                         isValidGroupTask(incoming(), groupId) &&
+                         isGroupMember(groupId) &&
+                         incoming().groupId == existing().groupId &&
+                         incoming().createdByUid == existing().createdByUid &&
+                         incoming().createdAt == existing().createdAt &&
+                         (
+                           isGroupAdmin(groupId) ||
+                           (
+                             (existing().assignedToUid == 'ALL' || existing().assignedToUid == request.auth.uid) &&
+                             incoming().diff(existing()).affectedKeys().hasOnly([
+                               'proofStatus', 'proofImageBase64', 'proofNote',
+                               'geminiEvaluationResult', 'isCompleted',
+                               'completedByUid', 'completedByName', 'completedAtMillis',
+                               'creditsDelta', 'creditSecondsDelta', 'creditsApplied',
+                               'proofSubmittedAtMillis', 'proofSubmittedByUid',
+                               'updatedAt'
+                             ]) &&
+                             (existing().useGeminiAutoApproval == true || !existing().requiresPhotoProof || (!incoming().isCompleted && incoming().proofStatus != 'APPROVED'))
+                           )
+                         );
+
+        allow delete: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(taskId) &&
+                         isGroupMember(groupId) &&
+                         (isGroupAdmin(groupId) || existing().createdByUid == request.auth.uid);
+      }
+
+      match /memberScreenTime/{limitId} {
+        allow get, list: if isSignedIn() && isValidId(groupId) && isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(limitId) &&
+                         isValidGroupScreenTimeLimit(incoming(), groupId) &&
+                         isGroupAdmin(groupId);
+
+        allow update: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(limitId) &&
+                         isValidGroupScreenTimeLimit(incoming(), groupId) &&
+                         incoming().createdAt == existing().createdAt &&
+                         (
+                           isGroupAdmin(groupId) ||
+                           (
+                             existing().targetUid == request.auth.uid &&
+                             existing().requireTaskIdToUnlock != '' &&
+                             incoming().requireTaskIdToUnlock == '' &&
+                             get(/databases/$(database)/documents/groups/$(groupId)/groupTasks/$(existing().requireTaskIdToUnlock)).data.isCompleted == true
+                           )
+                         );
+
+        allow delete: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(limitId) &&
+                         (
+                           isGroupAdmin(groupId) ||
+                           (
+                             existing().targetUid == request.auth.uid &&
+                             existing().requireTaskIdToUnlock != '' &&
+                             get(/databases/$(database)/documents/groups/$(groupId)/groupTasks/$(existing().requireTaskIdToUnlock)).data.isCompleted == true
+                           )
+                         );
+      }
+
+      match /creditTransactions/{txId} {
+        allow get, list: if isSignedIn() && isValidId(groupId) && isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(txId) &&
+                         isValidCreditTransaction(incoming(), groupId) &&
+                         isGroupMember(groupId) &&
+                         incoming().awardedByUid == request.auth.uid &&
+                         (
+                           isGroupManager(groupId) ||
+                           (
+                             incoming().userId == request.auth.uid &&
+                             incoming().taskId != '' &&
+                             ((!incoming().taskId.matches('^icon_purchase_.*') && !incoming().taskId.matches('^perk_.*')) || incoming().pointsDelta <= 0)
+                           )
+                         );
+
+        allow update: if false;
+        allow delete: if isSignedIn() && isValidId(groupId) && isGroupManager(groupId);
+      }
+
+      match /perks/{perkId} {
+        allow get, list: if isSignedIn() && isValidId(groupId) && isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(perkId) &&
+                         isValidGroupPerk(incoming(), groupId) &&
+                         isGroupManager(groupId) &&
+                         incoming().managerUid == request.auth.uid &&
+                         incoming().assignedToUid != request.auth.uid &&
+                         (incoming().assignedToUid in groupDoc(groupId).memberUids);
+
+        allow update: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(perkId) &&
+                         isValidGroupPerk(incoming(), groupId) &&
+                         incoming().groupId == existing().groupId &&
+                         incoming().managerUid == existing().managerUid &&
+                         incoming().createdAt == existing().createdAt &&
+                         (
+                           (
+                             isGroupManager(groupId) &&
+                             incoming().assignedToUid != existing().managerUid &&
+                             (incoming().assignedToUid in groupDoc(groupId).memberUids)
+                           ) ||
+                           (
+                             isGroupMember(groupId) &&
+                             existing().assignedToUid == request.auth.uid &&
+                             incoming().assignedToUid == existing().assignedToUid &&
+                             groupDoc(groupId).creditSystemEnabled == true &&
+                             existing().perkStatus == 'ASSIGNED' &&
+                             incoming().perkStatus == 'REDEEMED' &&
+                             incoming().redeemedCount == existing().redeemedCount + 1 &&
+                             incoming().diff(existing()).affectedKeys().hasOnly([
+                               'perkStatus', 'redeemedCount', 'redeemedAtMillis', 'updatedAt'
+                             ])
+                           )
+                         );
+
+        allow delete: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(perkId) &&
+                         isGroupManager(groupId);
+      }
+
+      match /relays/{relayId} {
+        allow get, list: if isSignedIn() && isValidId(groupId) && isGroupMember(groupId);
+
+        allow create: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(relayId) &&
+                         isGroupMember(groupId) &&
+                         isValidGroupRelay(incoming(), groupId) &&
+                         incoming().createdByUid == request.auth.uid &&
+                         incoming().currentStepIndex == 0 &&
+                         incoming().relayStatus == 'ACTIVE';
+
+        allow update: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(relayId) &&
+                         isGroupMember(groupId) &&
+                         isValidGroupRelay(incoming(), groupId) &&
+                         incoming().groupId == existing().groupId &&
+                         incoming().createdByUid == existing().createdByUid &&
+                         incoming().createdAt == existing().createdAt &&
+                         (
+                           isGroupAdmin(groupId) ||
+                           (
+                             existing().relayStatus == 'ACTIVE' &&
+                             existing().currentAssigneeUid == request.auth.uid &&
+                             incoming().currentStepIndex == existing().currentStepIndex + 1 &&
+                             incoming().title == existing().title &&
+                             incoming().description == existing().description &&
+                             incoming().steps.size() == existing().steps.size()
+                           )
+                         );
+
+        allow delete: if isSignedIn() &&
+                         isValidId(groupId) &&
+                         isValidId(relayId) &&
+                         (isGroupAdmin(groupId) || existing().createdByUid == request.auth.uid);
+      }
+    }
+
+    match /groupInvites/{inviteId} {
+      allow list: if isSignedIn() && (
+        (hasVerifiedEmail() && existing().targetEmail == userEmailLower()) ||
+        request.auth.uid in existing().groupAdminUids ||
+        existing().senderUid == request.auth.uid
+      );
+
+      allow get: if isSignedIn() && resource != null && (
+        (hasVerifiedEmail() && existing().targetEmail == userEmailLower()) ||
+        request.auth.uid in existing().groupAdminUids ||
+        existing().senderUid == request.auth.uid ||
+        isGroupAdmin(existing().groupId)
+      );
+
+      allow create: if isSignedIn() &&
+                       isValidId(inviteId) &&
+                       isValidGroupInvite(incoming()) &&
+                       incoming().senderUid == request.auth.uid &&
+                       request.auth.uid in incoming().groupAdminUids &&
+                       isGroupAdmin(incoming().groupId);
+
+      allow update: if isSignedIn() &&
+                       isValidId(inviteId) &&
+                       isValidGroupInvite(incoming()) &&
+                       incoming().groupId == existing().groupId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         (isGroupAdmin(existing().groupId) && incoming().senderUid == request.auth.uid) ||
+                         (
+                           hasVerifiedEmail() &&
+                           existing().targetEmail == userEmailLower() &&
+                           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'acceptedByUid', 'updatedAt']) &&
+                           (
+                             (incoming().status == 'ACCEPTED' && incoming().acceptedByUid == request.auth.uid) ||
+                             (incoming().status == 'DECLINED' && incoming().acceptedByUid == '')
+                           )
+                         )
+                       );
+
+      allow delete: if isSignedIn() &&
+                       isValidId(inviteId) &&
+                       (existing().senderUid == request.auth.uid ||
+                        request.auth.uid in existing().groupAdminUids ||
+                        isGroupAdmin(existing().groupId));
+    }
+  }
+}

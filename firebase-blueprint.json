@@ -1,0 +1,573 @@
+{
+  "entities": {
+    "CloudTask": {
+      "title": "CloudTask",
+      "description": "A user task synchronized to Firestore with priority reminder intervals and recurring schedule metadata.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "subtext": { "type": "string" },
+        "scheduledAtMillis": { "type": "integer" },
+        "maxCompletionMillis": { "type": "integer" },
+        "reminderIntervalMinutes": { "type": "integer" },
+        "recurrenceType": {
+          "type": "string",
+          "enum": ["NONE", "DAILY", "WEEKLY", "CUSTOM_DAYS", "MONTHLY", "ANNUALLY"]
+        },
+        "recurrenceInterval": { "type": "integer" },
+        "recurrenceDaysCsv": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "completedAtMillis": { "type": "integer" },
+        "creditsAwarded": { "type": "integer" },
+        "creditSecondsDelta": { "type": "integer" },
+        "priority": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "urgencyLevel": { "type": "integer" },
+        "categoryId": { "type": "string" },
+        "ringAlarmBell": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "title",
+        "subtext",
+        "scheduledAtMillis",
+        "maxCompletionMillis",
+        "reminderIntervalMinutes",
+        "recurrenceType",
+        "recurrenceInterval",
+        "recurrenceDaysCsv",
+        "isCompleted",
+        "completedAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudUserPreferences": {
+      "title": "CloudUserPreferences",
+      "description": "User theme, tonal spot palette, category, free profile icon, and notification preferences synced across devices.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "themeMode": { "type": "string", "enum": ["SYSTEM", "LIGHT", "DARK"] },
+        "useDynamicColor": { "type": "boolean" },
+        "tonalSpotPalette": {
+          "type": "string",
+          "enum": ["INDIGO", "EMERALD", "CORAL", "TEAL", "ROSE"]
+        },
+        "defaultReminderMinutes": { "type": "integer" },
+        "notificationsEnabled": { "type": "boolean" },
+        "autoDeleteUpdateApk": { "type": "boolean" },
+        "creditSystemEnabled": { "type": "boolean" },
+        "personalCredits": { "type": "integer" },
+        "earlyPointsPerSecond": { "type": "number" },
+        "latePenaltyPerSecond": { "type": "number" },
+        "creditGracePeriodSeconds": { "type": "integer" },
+        "maxCreditPerTask": { "type": "integer" },
+        "maxPenaltyPerTask": { "type": "integer" },
+        "allowNegativeCredits": { "type": "boolean" },
+        "activeProfileIcon": { "type": "string" },
+        "unlockedProfileIcons": { "type": "array", "items": { "type": "string" } },
+        "categoriesEnabled": { "type": "boolean" },
+        "disabledPremadeCategoryIds": { "type": "array", "items": { "type": "string" } },
+        "customCategoriesJson": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "themeMode",
+        "useDynamicColor",
+        "tonalSpotPalette",
+        "defaultReminderMinutes",
+        "notificationsEnabled",
+        "autoDeleteUpdateApk",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudScreenTimeLimit": {
+      "title": "CloudScreenTimeLimit",
+      "description": "Per-package screen time limit synchronized across user devices.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "packageName": { "type": "string" },
+        "appName": { "type": "string" },
+        "limitMinutes": { "type": "integer" },
+        "usedMinutes": { "type": "integer" },
+        "periodType": { "type": "string", "enum": ["HOURLY", "DAILY", "WEEKLY"] },
+        "isEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "packageName",
+        "appName",
+        "limitMinutes",
+        "usedMinutes",
+        "periodType",
+        "isEnabled",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroup": {
+      "title": "CloudGroup",
+      "description": "A Family or Organization Group managed by a primary manager with optional, disabled-by-default group points and manager-assigned perks.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "groupType": { "type": "string", "enum": ["FAMILY", "ORGANIZATION"] },
+        "managerUid": { "type": "string" },
+        "managerEmail": { "type": "string" },
+        "managerName": { "type": "string" },
+        "memberUids": { "type": "array", "items": { "type": "string" } },
+        "adminUids": { "type": "array", "items": { "type": "string" } },
+        "invitedEmails": { "type": "array", "items": { "type": "string" } },
+        "invitedAdminEmails": { "type": "array", "items": { "type": "string" } },
+        "creditSystemEnabled": { "type": "boolean" },
+        "earlyPointsPerSecond": { "type": "number" },
+        "latePenaltyPerSecond": { "type": "number" },
+        "creditGracePeriodSeconds": { "type": "integer" },
+        "maxCreditPerTask": { "type": "integer" },
+        "maxPenaltyPerTask": { "type": "integer" },
+        "allowNegativeCredits": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "name",
+        "groupType",
+        "managerUid",
+        "managerEmail",
+        "managerName",
+        "memberUids",
+        "adminUids",
+        "invitedEmails",
+        "invitedAdminEmails",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupInvite": {
+      "title": "CloudGroupInvite",
+      "description": "An email-targeted invitation request to join a Group.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "groupName": { "type": "string" },
+        "groupType": { "type": "string", "enum": ["FAMILY", "ORGANIZATION"] },
+        "senderUid": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderEmail": { "type": "string" },
+        "targetEmail": { "type": "string" },
+        "proposedRole": {
+          "type": "string",
+          "enum": ["PARENT_ADMIN", "MEMBER", "CHILD"]
+        },
+        "groupAdminUids": { "type": "array", "items": { "type": "string" } },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "ACCEPTED", "DECLINED"]
+        },
+        "acceptedByUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "groupName",
+        "groupType",
+        "senderUid",
+        "senderName",
+        "senderEmail",
+        "targetEmail",
+        "proposedRole",
+        "groupAdminUids",
+        "status",
+        "acceptedByUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupMember": {
+      "title": "CloudGroupMember",
+      "description": "A member inside a Group with role, management permissions, and remote device lock state.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": {
+          "type": "string",
+          "enum": ["MANAGER", "PARENT_ADMIN", "MEMBER", "CHILD"]
+        },
+        "canManageOthers": { "type": "boolean" },
+        "remoteDeviceLocked": { "type": "boolean" },
+        "remoteLockReason": { "type": "string" },
+        "installedApps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "packageName": { "type": "string" },
+              "appName": { "type": "string" }
+            },
+            "required": ["packageName", "appName"]
+          }
+        },
+        "appsLastSyncedAtMillis": { "type": "integer" },
+        "creditBalance": { "type": "integer" },
+        "totalEarnedCredits": { "type": "integer" },
+        "totalDeductedCredits": { "type": "integer" },
+        "activeProfileIcon": { "type": "string" },
+        "unlockedProfileIcons": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "uid",
+        "email",
+        "displayName",
+        "role",
+        "canManageOthers",
+        "remoteDeviceLocked",
+        "remoteLockReason",
+        "installedApps",
+        "appsLastSyncedAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupTask": {
+      "title": "CloudGroupTask",
+      "description": "A task assigned to the entire Group or a specific member, supporting app unlock rewards, photo proofs, and Gemini AI verification.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "title": { "type": "string" },
+        "subtext": { "type": "string" },
+        "createdByUid": { "type": "string" },
+        "createdByName": { "type": "string" },
+        "assignedToUid": { "type": "string" },
+        "assignedToName": { "type": "string" },
+        "priority": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "dueAtMillis": { "type": "integer" },
+        "reminderIntervalMinutes": { "type": "integer" },
+        "ringAlarmBell": { "type": "boolean" },
+        "gatedAppPackage": { "type": "string" },
+        "gatedAppName": { "type": "string" },
+        "unlockRewardMinutes": { "type": "integer" },
+        "requiresPhotoProof": { "type": "boolean" },
+        "useGeminiAutoApproval": { "type": "boolean" },
+        "geminiVerificationPrompt": { "type": "string" },
+        "proofStatus": {
+          "type": "string",
+          "enum": ["NONE", "PENDING_PROOF", "PENDING_APPROVAL", "APPROVED", "REJECTED"]
+        },
+        "proofImageBase64": { "type": "string" },
+        "proofNote": { "type": "string" },
+        "geminiEvaluationResult": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "completedByUid": { "type": "string" },
+        "completedByName": { "type": "string" },
+        "completedAtMillis": { "type": "integer" },
+        "creditsDelta": { "type": "integer" },
+        "creditSecondsDelta": { "type": "integer" },
+        "creditsApplied": { "type": "boolean" },
+        "proofSubmittedAtMillis": { "type": "integer" },
+        "proofSubmittedByUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "title",
+        "subtext",
+        "createdByUid",
+        "createdByName",
+        "assignedToUid",
+        "assignedToName",
+        "priority",
+        "dueAtMillis",
+        "reminderIntervalMinutes",
+        "ringAlarmBell",
+        "gatedAppPackage",
+        "gatedAppName",
+        "unlockRewardMinutes",
+        "requiresPhotoProof",
+        "useGeminiAutoApproval",
+        "geminiVerificationPrompt",
+        "proofStatus",
+        "proofImageBase64",
+        "proofNote",
+        "geminiEvaluationResult",
+        "isCompleted",
+        "completedByName",
+        "completedAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupScreenTimeLimit": {
+      "title": "CloudGroupScreenTimeLimit",
+      "description": "Remotely enforced screen time limit assigned to a group member by a manager or parent.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "targetUid": { "type": "string" },
+        "targetMemberName": { "type": "string" },
+        "packageName": { "type": "string" },
+        "appName": { "type": "string" },
+        "limitMinutes": { "type": "integer" },
+        "usedMinutes": { "type": "integer" },
+        "periodType": { "type": "string", "enum": ["HOURLY", "DAILY", "WEEKLY"] },
+        "lockMode": { "type": "string", "enum": ["LOCK_NOW", "LOCK_AT_TIME", "USAGE_LIMIT"] },
+        "lockAtMillis": { "type": "integer" },
+        "taskInstructions": { "type": "string" },
+        "playBeepOnLock": { "type": "boolean" },
+        "requireTaskIdToUnlock": { "type": "string" },
+        "requireTaskTitle": { "type": "string" },
+        "enforcedByUid": { "type": "string" },
+        "enforcedByName": { "type": "string" },
+        "isEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "targetUid",
+        "targetMemberName",
+        "packageName",
+        "appName",
+        "limitMinutes",
+        "usedMinutes",
+        "periodType",
+        "lockMode",
+        "lockAtMillis",
+        "taskInstructions",
+        "playBeepOnLock",
+        "requireTaskIdToUnlock",
+        "requireTaskTitle",
+        "enforcedByUid",
+        "enforcedByName",
+        "isEnabled",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudCreditTransaction": {
+      "title": "CloudCreditTransaction",
+      "description": "Immutable credit ledger entry recording points earned for early completion, deducted for late completion, or adjusted by a manager.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "groupId": { "type": "string" },
+        "taskId": { "type": "string" },
+        "taskTitle": { "type": "string" },
+        "pointsDelta": { "type": "integer" },
+        "secondsDelta": { "type": "integer" },
+        "reason": { "type": "string" },
+        "awardedByUid": { "type": "string" },
+        "awardedByName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "userName",
+        "groupId",
+        "taskId",
+        "taskTitle",
+        "pointsDelta",
+        "secondsDelta",
+        "reason",
+        "awardedByUid",
+        "awardedByName",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupPerk": {
+      "title": "CloudGroupPerk",
+      "description": "A reward perk assigned by the Group's main manager to a specific non-manager group member, redeemable with group points when enabled or granted directly.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "managerUid": { "type": "string" },
+        "assignedToUid": { "type": "string" },
+        "assignedToName": { "type": "string" },
+        "assignedByName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "pointsCost": { "type": "integer" },
+        "perkStatus": { "type": "string", "enum": ["ASSIGNED", "REDEEMED", "GRANTED"] },
+        "redeemedCount": { "type": "integer" },
+        "redeemedAtMillis": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "managerUid",
+        "assignedToUid",
+        "assignedToName",
+        "assignedByName",
+        "title",
+        "description",
+        "pointsCost",
+        "perkStatus",
+        "redeemedCount",
+        "redeemedAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudTaskRecord": {
+      "title": "CloudTaskRecord",
+      "description": "Private, owner-only historical record of tasks entered, completed, given in Family/Workplace groups, and points received for finishing tasks, each with exact timestamps.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "recordType": { "type": "string", "enum": ["ENTERED", "DONE", "GIVEN", "POINTS_RECEIVED"] },
+        "sourceScope": { "type": "string", "enum": ["PERSONAL", "FAMILY", "WORKPLACE"] },
+        "taskId": { "type": "string" },
+        "taskTitle": { "type": "string" },
+        "taskSubtext": { "type": "string" },
+        "groupId": { "type": "string" },
+        "groupName": { "type": "string" },
+        "counterpartyName": { "type": "string" },
+        "pointsReceived": { "type": "integer" },
+        "hasPoints": { "type": "boolean" },
+        "pointsReason": { "type": "string" },
+        "eventTimeMillis": { "type": "integer" },
+        "dueAtMillis": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "recordType",
+        "sourceScope",
+        "taskId",
+        "taskTitle",
+        "taskSubtext",
+        "groupId",
+        "groupName",
+        "counterpartyName",
+        "pointsReceived",
+        "hasPoints",
+        "pointsReason",
+        "eventTimeMillis",
+        "dueAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudGroupRelay": {
+      "title": "CloudGroupRelay",
+      "description": "Multi-step Pass-the-Baton group relay task chain assigned sequentially across members.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "createdByUid": { "type": "string" },
+        "createdByName": { "type": "string" },
+        "steps": { "type": "array", "items": { "type": "object" } },
+        "currentStepIndex": { "type": "integer" },
+        "currentAssigneeUid": { "type": "string" },
+        "relayStatus": { "type": "string", "enum": ["ACTIVE", "COMPLETED"] },
+        "streakCount": { "type": "integer" },
+        "startedAtMillis": { "type": "integer" },
+        "lastHandoffAtMillis": { "type": "integer" },
+        "completedAtMillis": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "groupId",
+        "title",
+        "description",
+        "createdByUid",
+        "createdByName",
+        "steps",
+        "currentStepIndex",
+        "currentAssigneeUid",
+        "relayStatus",
+        "streakCount",
+        "startedAtMillis",
+        "lastHandoffAtMillis",
+        "completedAtMillis",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/CloudTask" },
+      "description": "Per-user synchronized tasks collection."
+    },
+    "/users/{userId}/taskRecords/{recordId}": {
+      "schema": { "$ref": "#/entities/CloudTaskRecord" },
+      "description": "Private, owner-only library of entered, completed, given group tasks, and task points with timestamps."
+    },
+    "/users/{userId}/settings/{prefId}": {
+      "schema": { "$ref": "#/entities/CloudUserPreferences" },
+      "description": "Per-user synchronized settings and theme preferences."
+    },
+    "/users/{userId}/screentime/{limitId}": {
+      "schema": { "$ref": "#/entities/CloudScreenTimeLimit" },
+      "description": "Per-user synchronized app screen time limits."
+    },
+    "/users/{userId}/creditTransactions/{txId}": {
+      "schema": { "$ref": "#/entities/CloudCreditTransaction" },
+      "description": "Legacy per-user credit ledger transactions."
+    },
+    "/groups/{groupId}": {
+      "schema": { "$ref": "#/entities/CloudGroup" },
+      "description": "Family or Organization Groups."
+    },
+    "/groupInvites/{inviteId}": {
+      "schema": { "$ref": "#/entities/CloudGroupInvite" },
+      "description": "Email-based group join invitations."
+    },
+    "/groups/{groupId}/members/{memberUid}": {
+      "schema": { "$ref": "#/entities/CloudGroupMember" },
+      "description": "Members and roles within a Group."
+    },
+    "/groups/{groupId}/groupTasks/{taskId}": {
+      "schema": { "$ref": "#/entities/CloudGroupTask" },
+      "description": "Tasks assigned to the Group or individual members."
+    },
+    "/groups/{groupId}/memberScreenTime/{limitId}": {
+      "schema": { "$ref": "#/entities/CloudGroupScreenTimeLimit" },
+      "description": "Remotely enforced screen time limits for Group members."
+    },
+    "/groups/{groupId}/creditTransactions/{txId}": {
+      "schema": { "$ref": "#/entities/CloudCreditTransaction" },
+      "description": "Point ledger transactions for Group members."
+    },
+    "/groups/{groupId}/perks/{perkId}": {
+      "schema": { "$ref": "#/entities/CloudGroupPerk" },
+      "description": "Perks assigned by the main manager to individual Group members."
+    },
+    "/groups/{groupId}/relays/{relayId}": {
+      "schema": { "$ref": "#/entities/CloudGroupRelay" },
+      "description": "Multi-step Pass-the-Baton relay task chains for Family & Workplace groups."
+    }
+  }
+}
